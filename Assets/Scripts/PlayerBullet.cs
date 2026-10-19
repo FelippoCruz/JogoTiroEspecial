@@ -1,46 +1,137 @@
+
 using UnityEngine;
 
-// Colocar no PREFAB da bala (PlayerBullet).
-// Move a bala por código e testa o caminho com Raycast a cada quadro,
-// então não atravessa a parede fina e não depende de Tag nem de Rigidbody.
 public class PlayerBullet : MonoBehaviour
 {
-    [SerializeField] private float speed = 20f;
-    [SerializeField] private int damage = 1;
+    public enum AmmoType
+    {
+        Normal,
+        Heavy,
+        Fire,
+        Ice
+    }
+
+    [Header("Munição selecionada")]
+    [SerializeField] private AmmoType ammoType = AmmoType.Normal;
+
+    [Header("Configuração da bala normal")]
+    [SerializeField] private float normalSpeed = 20f;
+    [SerializeField] private float normalDamage = 1f;
+
+    [Header("Configuração da bala pesada")]
+    [SerializeField] private float heavySpeed = 8f;
+    [SerializeField] private float heavyDamage = 4f;
+
+    [Header("Configuração da bala de fogo")]
+    [SerializeField] private float fireSpeed = 30f;
+    [SerializeField] private float burnDamagePerTick = 0.25f;
+    [SerializeField] private float burnTickInterval = 1f;
+    [SerializeField] private float burnDuration = 4f;
+
+    [Header("Configuração da bala de gelo")]
+    [SerializeField] private float iceSpeed = 20f;
+    [SerializeField] private float iceDamage = 0.5f;
+    [SerializeField] private float freezeDuration = 1f;
+
+    [Header("Geral")]
     [SerializeField] private float lifetime = 3f;
-    [Tooltip("Quais layers a bala pode acertar (padrão: tudo).")]
     [SerializeField] private LayerMask hitMask = ~0;
 
-    private void Start()
+    private Vector3 shootDirection;
+    private float speed;
+    private float damage;
+    private bool initialized;
+
+    public void Initialize(Vector3 direction, AmmoType type)
     {
-        Destroy(gameObject, lifetime); // rede de segurança se não acertar nada
+        ammoType = type;
+        shootDirection = direction.normalized;
+
+        // Define os atributos da munição escolhida.
+        switch (ammoType)
+        {
+            case AmmoType.Normal:
+                speed = normalSpeed;
+                damage = normalDamage;
+                break;
+
+            case AmmoType.Heavy:
+                speed = heavySpeed;
+                damage = heavyDamage;
+                break;
+
+            case AmmoType.Fire:
+                speed = fireSpeed;
+                damage = 0f;
+                break;
+
+            case AmmoType.Ice:
+                speed = iceSpeed;
+                damage = iceDamage;
+                break;
+        }
+
+        transform.forward = shootDirection;
+        initialized = true;
+
+        Destroy(gameObject, lifetime);
     }
 
     private void Update()
     {
+        if (!initialized)
+            return;
+
         float step = speed * Time.deltaTime;
 
-        // Olha o trecho que a bala vai andar neste quadro.
-        // QueryTriggerInteraction.Collide: os alvos são triggers, então precisam ser detectados.
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit,
-                            step, hitMask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(
+            transform.position,
+            shootDirection,
+            out RaycastHit hit,
+            step,
+            hitMask,
+            QueryTriggerInteraction.Collide))
         {
             transform.position = hit.point;
             OnHit(hit.collider);
             return;
         }
 
-        transform.position += transform.forward * step;
+        transform.position += shootDirection * step;
     }
 
     private void OnHit(Collider other)
     {
-        // Se for um alvo, causa dano. Se for parede ou qualquer outra coisa, só some.
-        if (other.TryGetComponent(out Target target))
+        Target target = other.GetComponentInParent<Target>();
+
+        if (target != null)
         {
-            target.TakeHit(damage);
+            switch (ammoType)
+            {
+                case AmmoType.Normal:
+                    target.TakeDamage(damage);
+                    break;
+
+                case AmmoType.Heavy:
+                    target.TakeDamage(damage);
+                    break;
+
+                case AmmoType.Fire:
+                    target.ApplyBurn(
+                        burnDamagePerTick,
+                        burnTickInterval,
+                        burnDuration
+                    );
+                    break;
+
+                case AmmoType.Ice:
+                    target.TakeDamage(damage);
+                    target.ApplyFreeze(freezeDuration);
+                    break;
+            }
         }
 
+        // A bala desaparece após o impacto, independentemente do tipo.
         Destroy(gameObject);
     }
 }

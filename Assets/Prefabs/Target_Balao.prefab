@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3544743598164051097}
   - component: {fileID: 2789455012823732409}
   - component: {fileID: 3381450055476664288}
+  - component: {fileID: 5757651115983271539}
   m_Layer: 0
   m_Name: Target_Balao
   m_TagString: Untagged
@@ -154,4 +155,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Target
   points: 10
-  maxHealth: 1
+  maxHealth: 3
+--- !u!114 &5757651115983271539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6157721266995945632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6321d31021aa7b84cb4bf06905c6adfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4959719499579047803}
   - component: {fileID: 5074474688021852358}
   - component: {fileID: 8272905704164233851}
+  - component: {fileID: 1448574478504306964}
   m_Layer: 0
   m_Name: Target_Latao
   m_TagString: Untagged
@@ -133,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Target
   points: 10
-  maxHealth: 1
+  maxHealth: 3
 --- !u!65 &8272905704164233851
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -155,3 +156,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1448574478504306964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3879269620678514216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6321d31021aa7b84cb4bf06905c6adfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
